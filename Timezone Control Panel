@@ -1,0 +1,110 @@
+Add-Type -AssemblyName System.Windows.Forms
+Add-Type -AssemblyName System.Drawing
+
+
+$form = New-Object Windows.Forms.Form
+$form.Text = "Time Zone Control Panel"
+$form.Size = New-Object Drawing.Size(500,350)
+$form.StartPosition = "CenterScreen"
+$form.BackColor = "#202020"
+
+
+$title = New-Object Windows.Forms.Label
+$title.Text = "🌎 Time Zone Control Panel"
+$title.ForeColor = "White"
+$title.Font = New-Object Drawing.Font("Segoe UI",20,[Drawing.FontStyle]::Bold)
+$title.Location = "80,20"
+$title.AutoSize = $true
+$form.Controls.Add($title)
+
+
+
+$current = New-Object Windows.Forms.Label
+$current.ForeColor = "Lime"
+$current.Font = New-Object Drawing.Font("Segoe UI",12)
+$current.Location = "40,80"
+$current.AutoSize = $true
+$form.Controls.Add($current)
+
+
+
+$zones = New-Object Windows.Forms.ComboBox
+$zones.Location = "40,130"
+$zones.Size = "400,30"
+$zones.DropDownStyle = "DropDownList"
+
+$timezones = @(
+    "Pacific Standard Time",
+    "Mountain Standard Time",
+    "Central Standard Time",
+    "Eastern Standard Time",
+    "GMT Standard Time",
+    "Tokyo Standard Time",
+    "China Standard Time",
+    "India Standard Time",
+    "AUS Eastern Standard Time"
+)
+
+foreach($z in $timezones){
+    $zones.Items.Add($z)
+}
+
+$zones.SelectedIndex = 3
+
+$form.Controls.Add($zones)
+
+
+
+$apply = New-Object Windows.Forms.Button
+$apply.Text = "Apply Time Zone"
+$apply.Size = New-Object Drawing.Size(180,45)
+$apply.Location = "40,200"
+$form.Controls.Add($apply)
+
+
+
+$restore = New-Object Windows.Forms.Button
+$restore.Text = "Restore Original"
+$restore.Size = New-Object Drawing.Size(180,45)
+$restore.Location = "240,200"
+$form.Controls.Add($restore)
+
+
+
+$script:originalZone = (Get-TimeZone).Id
+
+
+function Update-Text {
+
+    $current.Text =
+    "Current: $((Get-TimeZone).Id)"
+
+}
+
+Update-Text
+
+
+
+$apply.Add_Click({
+
+    $selected = $zones.SelectedItem
+
+    Set-TimeZone -Id $selected
+
+    Update-Text
+
+})
+
+
+
+$restore.Add_Click({
+
+    Set-TimeZone -Id $script:originalZone
+
+    Update-Text
+
+})
+
+
+
+$form.ShowDialog()

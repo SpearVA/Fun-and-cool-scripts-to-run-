@@ -1,0 +1,32 @@
+$host.UI.RawUI.WindowTitle = "Matrix"
+
+$chars = "アカサタナハマヤラワ0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+$width = [console]::WindowWidth
+$height = [console]::WindowHeight
+
+$columns = @()
+for ($i = 0; $i -lt $width; $i++) {
+    $columns += Get-Random -Minimum 0 -Maximum $height
+}
+
+[Console]::CursorVisible = $false
+
+while ($true) {
+    for ($i = 0; $i -lt $width; $i++) {
+        $y = $columns[$i]
+
+        [Console]::SetCursorPosition($i,$y)
+        Write-Host ($chars[(Get-Random -Minimum 0 -Maximum $chars.Length)]) -ForegroundColor Green -NoNewline
+
+        if ($y -gt 0) {
+            [Console]::SetCursorPosition($i,$y-1)
+            Write-Host " " -NoNewline
+        }
+
+        $columns[$i]++
+
+        if ($columns[$i] -ge $height) {
+            $columns[$i] = 0
+        }
+    }
+}

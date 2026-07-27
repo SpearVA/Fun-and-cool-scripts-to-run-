@@ -1,0 +1,47 @@
+Add-Type -AssemblyName PresentationFramework
+
+# First popup
+$result = [System.Windows.MessageBox]::Show(
+    "freerobuxinstaller.exe`n`nWould you like to install this file?",
+    "freerobuxinstaller.exe",
+    "YesNo",
+    "Question"
+)
+
+if ($result -eq "Yes") {
+
+    # Warning popups
+    for ($i = 1; $i -le 3; $i++) {
+        [System.Windows.MessageBox]::Show(
+            "WARNING:`n`nYour computer may be at risk if you install this file.`n`nWould you like to continue?",
+            "Windows Security Warning",
+            "YesNo",
+            "Warning"
+        )
+    }
+
+    # Fake hack screen
+    [System.Windows.MessageBox]::Show(
+        "⚠ SYSTEM COMPROMISED ⚠`n`nUnauthorized access detected.`n`nYour files are being scanned...",
+        "Windows Defender",
+        "OK",
+        "Error"
+    )
+
+    # Final joke
+    [System.Windows.MessageBox]::Show(
+        "😂 jk lol`n`nYour computer is fine.",
+        "freerobuxinstaller.exe",
+        "OK",
+        "Information"
+    )
+
+}
+else {
+    [System.Windows.MessageBox]::Show(
+        "Installation cancelled.",
+        "freerobuxinstaller.exe",
+        "OK",
+        "Information"
+    )
+}

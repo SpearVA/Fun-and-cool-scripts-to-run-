@@ -1,0 +1,147 @@
+Add-Type -AssemblyName PresentationFramework
+Add-Type -AssemblyName PresentationCore
+Add-Type -AssemblyName WindowsBase
+Add-Type -AssemblyName System.Windows.Forms
+
+
+$windows = @()
+
+
+foreach($screen in [System.Windows.Forms.Screen]::AllScreens){
+
+    $window = New-Object Windows.Window
+
+    $window.WindowStyle = "None"
+    $window.ResizeMode = "NoResize"
+    $window.Topmost = $true
+    $window.ShowInTaskbar = $false
+    $window.Background = "Black"
+
+    $window.Left = $screen.Bounds.Left
+    $window.Top = $screen.Bounds.Top
+    $window.Width = $screen.Bounds.Width
+    $window.Height = $screen.Bounds.Height
+
+
+    $canvas = New-Object Windows.Controls.Canvas
+    $window.Content = $canvas
+
+
+    $rand = New-Object Random
+    $texts = @()
+
+
+    # HUGE amount of text
+
+    for($i = 0; $i -lt 1500; $i++){
+
+        $txt = New-Object Windows.Controls.TextBlock
+
+        $txt.Text = "OBAMA"
+        $txt.FontSize = $rand.Next(15,45)
+        $txt.FontWeight = "Bold"
+
+        $txt.Foreground =
+        @(
+            "Red",
+            "Lime",
+            "Cyan",
+            "Yellow",
+            "White",
+            "Magenta"
+        ) | Get-Random
+
+
+        $x = $rand.Next(0,$screen.Bounds.Width)
+        $y = $rand.Next(0,$screen.Bounds.Height)
+
+
+        [Windows.Controls.Canvas]::SetLeft($txt,$x)
+        [Windows.Controls.Canvas]::SetTop($txt,$y)
+
+
+        $canvas.Children.Add($txt)
+
+        $texts += @{
+            Item=$txt
+            X=$x
+            Y=$y
+            Speed=$rand.Next(1,8)
+        }
+
+    }
+
+
+    $timer = New-Object Windows.Threading.DispatcherTimer
+    $timer.Interval=[TimeSpan]::FromMilliseconds(80)
+
+
+    $timer.Add_Tick({
+
+        foreach($t in $texts){
+
+            $t.Y += $t.Speed
+
+            if($t.Y -gt $screen.Bounds.Height){
+                $t.Y = -50
+            }
+
+
+            [Windows.Controls.Canvas]::SetTop(
+                $t.Item,
+                $t.Y
+            )
+
+
+            if($rand.Next(0,10) -gt 8){
+
+                $t.Item.Foreground =
+                @(
+                "Red",
+                "Lime",
+                "Cyan",
+                "Yellow"
+                ) | Get-Random
+
+            }
+
+        }
+
+    })
+
+
+    $window.Add_KeyDown({
+
+        if($_.Key -eq "Escape"){
+            $window.Close()
+        }
+
+    })
+
+
+    $timer.Start()
+
+    $windows += @{
+        Window=$window
+        Timer=$timer
+    }
+
+}
+
+
+foreach($w in $windows){
+    $w.Window.Show()
+}
+
+
+
+Start-Sleep -Seconds 30
+
+
+
+foreach($w in $windows){
+
+    $w.Timer.Stop()
+    $w.Window.Close()
+
+}
